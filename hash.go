@@ -13,6 +13,14 @@
 
 package merkletree
 
+import (
+	"fmt"
+
+	"github.com/wealdtech/go-merkletree/blake2b"
+	"github.com/wealdtech/go-merkletree/keccak256"
+	"github.com/wealdtech/go-merkletree/sha3"
+)
+
 // HashFunc is a hashing function.
 type HashFunc func(...[]byte) []byte
 
@@ -23,4 +31,44 @@ type HashType interface {
 
 	// HashLength provides the length of the hash.
 	HashLength() int
+}
+
+type HashCode int
+
+const (
+	INVALID   HashCode = iota // 0
+	BLAKE2B                   // 1
+	KECCAK256                 // 2
+	SHA256                    // 3
+	SHA512                    // 4
+)
+
+func GetHashCode(value HashType) (HashCode, error) {
+	switch value.(type) {
+	case *blake2b.BLAKE2b:
+		return BLAKE2B, nil
+	case *keccak256.Keccak256:
+		return KECCAK256, nil
+	case *sha3.SHA256:
+		return SHA256, nil
+	case *sha3.SHA512:
+		return SHA512, nil
+	default:
+		return INVALID, fmt.Errorf("invalid hash type")
+	}
+}
+
+func GetHashTypeFromCode(code HashCode) (HashType, error) {
+	switch code {
+	case BLAKE2B:
+		return blake2b.New(), nil
+	case KECCAK256:
+		return keccak256.New(), nil
+	case SHA256:
+		return sha3.New256(), nil
+	case SHA512:
+		return sha3.New512(), nil
+	default:
+		return nil, fmt.Errorf("invalid hash code: %v", code)
+	}
 }

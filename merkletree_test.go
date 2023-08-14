@@ -14,6 +14,7 @@
 package merkletree
 
 import (
+	"bytes"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -379,6 +380,70 @@ func TestBinaryExportImport(t *testing.T) {
 			assert.Nil(t, err, fmt.Sprintf("failed to create tree at test %d", i))
 
 			assert.Equal(t, tree.Root(), imported.Root())
+		}
+	}
+}
+
+func TestBinaryExportImportV2(t *testing.T) {
+	withData := false
+	for i, test := range tests {
+		if test.createErr == nil {
+			tree, err := NewTree(
+				WithData(test.data),
+				WithHashType(test.hashType),
+			)
+			if err != nil {
+				t.Fatalf("failed to create tree at test %d, err %s", i, err.Error())
+			}
+
+			exported, err := tree.ExportBinaryV2(withData) // false means export with no data
+			if err != nil {
+				t.Fatalf("failed to create tree at test %d, err %s", i, err.Error())
+			}
+
+			imported, err := ImportBinaryMerkleTreeV2(exported)
+			if err != nil {
+				t.Fatalf("failed to create tree at test %d, err %s", i, err.Error())
+			}
+
+			if len(imported.data) > 0 {
+				t.Fatalf("export without data, but data exists after imporing at test %d, err %s", i, err.Error())
+			}
+
+			if !bytes.Equal(tree.Root(), imported.Root()) {
+				t.Fatalf("root not equal after export/import at test %d, err %s", i, err.Error())
+			}
+		}
+	}
+
+	withData = true
+	for i, test := range tests {
+		if test.createErr == nil {
+			tree, err := NewTree(
+				WithData(test.data),
+				WithHashType(test.hashType),
+			)
+			if err != nil {
+				t.Fatalf("failed to create tree at test %d, err %s", i, err.Error())
+			}
+
+			exported, err := tree.ExportBinaryV2(withData)
+			if err != nil {
+				t.Fatalf("failed to create tree at test %d, err %s", i, err.Error())
+			}
+
+			imported, err := ImportBinaryMerkleTreeV2(exported)
+			if err != nil {
+				t.Fatalf("failed to create tree at test %d, err %s", i, err.Error())
+			}
+
+			if len(imported.data) <= 0 {
+				t.Fatalf("export with data, but data lost after imporing at test %d, err %s", i, err.Error())
+			}
+
+			if !bytes.Equal(tree.Root(), imported.Root()) {
+				t.Fatalf("root not equal after export/import at test %d, err %s", i, err.Error())
+			}
 		}
 	}
 }
