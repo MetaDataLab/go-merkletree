@@ -73,6 +73,8 @@ type Export struct {
 	Data [][]byte `json:"data"`
 	// nodes are the leaf and branch nodes of the Merkle tree
 	Nodes [][]byte `json:"nodes"`
+	// HashCode specifies the hash type
+	HashCode HashCode `json:"hash_code"`
 }
 
 func (t *MerkleTree) ExportBinary() ([]byte, error) {
@@ -103,6 +105,51 @@ func ImportBinaryMerkleTree(imp []byte, hash HashType) (*MerkleTree, error) {
 		sorted: tree.Sorted,
 		hash:   hash,
 		data:   tree.Data,
+		nodes:  tree.Nodes,
+	}
+	return &m, nil
+}
+
+func (t *MerkleTree) ExportBinaryV2(withdata bool) ([]byte, error) {
+	hc, err := GetHashCode(t.hash)
+	if err != nil {
+		return nil, err
+	}
+
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	m := Export{
+		Salt:     t.salt,
+		Sorted:   t.sorted,
+		Nodes:    t.nodes,
+		HashCode: hc,
+	}
+	if withdata {
+		m.Data = t.data
+	}
+	if err := enc.Encode(m); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func ImportBinaryMerkleTreeV2(imp []byte) (*MerkleTree, error) {
+	tree := &Export{}
+	buf := bytes.NewBuffer(imp)
+	dec := gob.NewDecoder(buf)
+	if err := dec.Decode(tree); err != nil {
+		return nil, err
+	}
+
+	hashType, err := GetHashTypeFromCode(tree.HashCode)
+	if err != nil {
+		return nil, err
+	}
+	m := MerkleTree{
+		salt:   tree.Salt,
+		sorted: tree.Sorted,
+		hash:   hashType,
+		data:   tree.Data, //may be empty
 		nodes:  tree.Nodes,
 	}
 	return &m, nil
