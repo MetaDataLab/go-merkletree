@@ -40,6 +40,34 @@ func TestProof(t *testing.T) {
 	}
 }
 
+func TestIndexProof(t *testing.T) {
+	for i, test := range tests {
+		if test.createErr == nil {
+			tree, err := NewTree(
+				WithData(test.data),
+				WithHashType(test.hashType),
+			)
+			if err != nil {
+				t.Fatalf("failed to create tree at test %d, err %s", i, err.Error())
+			}
+			for j, data := range test.data {
+				proof, err := tree.GenerateIndexProof(uint64(j), 0)
+				if err != nil {
+					t.Fatalf("failed to create proof at test %d data %d, err %s", i, j, err.Error())
+				}
+				proven, err := VerifyProofUsing(data, false, proof, [][]byte{tree.Root()}, test.hashType)
+				if err != nil {
+					t.Fatalf("error verifying proof at test %d data %d, err %s", i, j, err.Error())
+				}
+
+				if !proven {
+					t.Fatalf("failed to verify proof at test %d data %d, err %s", i, j, err.Error())
+				}
+			}
+		}
+	}
+}
+
 func TestSaltedProof(t *testing.T) {
 	for i, test := range tests {
 		if test.createErr == nil && test.salt {
