@@ -16,9 +16,9 @@ package merkletree
 import (
 	"fmt"
 
-	"github.com/wealdtech/go-merkletree/blake2b"
-	"github.com/wealdtech/go-merkletree/keccak256"
-	"github.com/wealdtech/go-merkletree/sha3"
+	"github.com/MetaDataLab/go-merkletree/blake2b"
+	"github.com/MetaDataLab/go-merkletree/keccak256"
+	"github.com/MetaDataLab/go-merkletree/sha3"
 )
 
 // HashFunc is a hashing function.

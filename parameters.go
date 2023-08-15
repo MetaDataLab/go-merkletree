@@ -16,7 +16,7 @@ package merkletree
 import (
 	"errors"
 
-	"github.com/wealdtech/go-merkletree/blake2b"
+	"github.com/MetaDataLab/go-merkletree/blake2b"
 )
 
 type parameters struct {

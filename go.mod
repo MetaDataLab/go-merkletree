@@ -1,4 +1,4 @@
-module github.com/wealdtech/go-merkletree
+module github.com/MetaDataLab/go-merkletree
 
 go 1.19
 

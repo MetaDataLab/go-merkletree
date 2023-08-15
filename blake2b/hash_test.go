@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/MetaDataLab/go-merkletree/blake2b"
 	"github.com/stretchr/testify/assert"
-	"github.com/wealdtech/go-merkletree/blake2b"
 )
 
 // _byteArray is a helper to turn a string in to a byte array

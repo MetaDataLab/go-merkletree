@@ -22,10 +22,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/MetaDataLab/go-merkletree/blake2b"
+	"github.com/MetaDataLab/go-merkletree/keccak256"
+	"github.com/MetaDataLab/go-merkletree/sha3"
 	"github.com/stretchr/testify/assert"
-	"github.com/wealdtech/go-merkletree/blake2b"
-	"github.com/wealdtech/go-merkletree/keccak256"
-	"github.com/wealdtech/go-merkletree/sha3"
 )
 
 // _byteArray is a helper to turn a string in to a byte array

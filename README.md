@@ -1,11 +1,11 @@
 # go-merkletree
 
-[![Tag](https://img.shields.io/github/tag/wealdtech/go-merkletree.svg)](https://github.com/wealdtech/go-merkletree/releases/)
+[![Tag](https://img.shields.io/github/tag/wealdtech/go-merkletree.svg)](https://github.com/MetaDataLab/go-merkletree/releases/)
 [![License](https://img.shields.io/github/license/wealdtech/go-merkletree.svg)](LICENSE)
-[![GoDoc](https://godoc.org/github.com/wealdtech/go-merkletree?status.svg)](https://godoc.org/github.com/wealdtech/go-merkletree)
+[![GoDoc](https://godoc.org/github.com/MetaDataLab/go-merkletree?status.svg)](https://godoc.org/github.com/MetaDataLab/go-merkletree)
 [![Travis CI](https://img.shields.io/travis/wealdtech/go-merkletree.svg)](https://travis-ci.org/wealdtech/go-merkletree)
 [![codecov.io](https://img.shields.io/codecov/c/github/wealdtech/go-merkletree.svg)](https://codecov.io/github/wealdtech/go-merkletree)
-[![Go Report Card](https://goreportcard.com/badge/github.com/wealdtech/go-merkletree)](https://goreportcard.com/report/github.com/wealdtech/go-merkletree)
+[![Go Report Card](https://goreportcard.com/badge/github.com/MetaDataLab/go-merkletree)](https://goreportcard.com/report/github.com/MetaDataLab/go-merkletree)
 
 Go implementation of a Merkle tree.
 
@@ -23,7 +23,7 @@ Go implementation of a Merkle tree.
 `go-merkletree` is a standard Go module which can be installed with:
 
 ```sh
-go get github.com/wealdtech/go-merkletree
+go get github.com/MetaDataLab/go-merkletree
 ```
 
 ## Usage
@@ -47,7 +47,7 @@ and below is a proof visualisation with the value being proved in red, the inter
 package main
 
 import (
-	merkletree "github.com/wealdtech/go-merkletree"
+	merkletree "github.com/MetaDataLab/go-merkletree"
 )
 
 // Example using the Merkle tree to generate and verify proofs.
@@ -92,7 +92,7 @@ Jim McDonald: [@mcdee](https://github.com/mcdee).
 
 ## Contribute
 
-Contributions welcome. Please check out [the issues](https://github.com/wealdtech/go-merkletree/issues).
+Contributions welcome. Please check out [the issues](https://github.com/MetaDataLab/go-merkletree/issues).
 
 ## License
 

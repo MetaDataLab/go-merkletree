@@ -17,8 +17,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/MetaDataLab/go-merkletree/sha3"
 	"github.com/stretchr/testify/assert"
-	"github.com/wealdtech/go-merkletree/sha3"
 )
 
 func Test512Hash(t *testing.T) {
