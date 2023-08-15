@@ -358,6 +358,44 @@ func New(data [][]byte) (*MerkleTree, error) {
 	return NewTree(WithData(data))
 }
 
+// NewTreeWithLeavesHashes creates a new merkle tree using leaves hashes, generating a tree without data.
+func NewTreeWithLeavesHashes(leavesNodes [][]byte, hashType HashType) (*MerkleTree, error) {
+	if len(leavesNodes) <= 0 {
+		return nil, fmt.Errorf("leavesNodes is empty")
+	}
+	branchesLen := int(math.Exp2(math.Ceil(math.Log2(float64(len(leavesNodes))))))
+
+	// We pad our data length up to the power of 2.
+	nodes := make([][]byte, branchesLen+len(leavesNodes)+(branchesLen-len(leavesNodes)))
+
+	for i := branchesLen; i < len(leavesNodes)+branchesLen; i++ {
+		nodes[i] = leavesNodes[i-branchesLen]
+	}
+
+	// Pad the space left after the leaves.
+	for i := len(leavesNodes) + branchesLen; i < len(nodes); i++ {
+		nodes[i] = make([]byte, hashType.HashLength())
+	}
+
+	// Branches.
+	sorted := false
+	createBranches(
+		nodes,
+		hashType,
+		branchesLen,
+		sorted,
+	)
+
+	tree := &MerkleTree{
+		salt:   false,
+		sorted: sorted,
+		hash:   hashType,
+		nodes:  nodes,
+	}
+
+	return tree, nil
+}
+
 // Hashes the data slice, placing the result hashes into dest.
 // salt adds a salt to the hash using the index.
 // sorted sorts the leaves and data by the value of the leaf hash.
@@ -416,6 +454,12 @@ func (t *MerkleTree) Pollard(height int) [][]byte {
 // Root returns the Merkle root (hash of the root node) of the tree.
 func (t *MerkleTree) Root() []byte {
 	return t.nodes[1]
+}
+
+// LeavesNodes returns the hashes of the leaves of the tree.
+func (t *MerkleTree) LeavesNodes() [][]byte {
+	branchesLen := int(math.Exp2(math.Ceil(math.Log2(float64(len(t.data))))))
+	return t.nodes[branchesLen : branchesLen+len(t.data)]
 }
 
 // Salt returns the true if the values in this Merkle tree are salted.

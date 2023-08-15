@@ -326,6 +326,64 @@ var tests = []struct {
 	},
 }
 
+var testsWithHashes = []struct {
+	// hash type to use
+	hashType HashType
+	// data hashes
+	hashes [][]byte
+	// expected error when attempting to create the tree
+	createErr error
+	// root hash after the tree has been created
+	root []byte
+	// pollards after the tree has been created
+	pollards [][][]byte
+	// DOT representation of tree
+	dot string
+	// DOT representation of tree for each data with proof at levels 0 through 3
+	proofDots [][]string
+	// DOT representation of tree with multiproof for all data
+	multiProofDot string
+	// salt the data?
+	salt bool
+	// should the hashes be sorted?
+	sorted bool
+	// saltedRoot hash after the tree has been created with the salt
+	saltedRoot []byte
+}{
+	{ // 0
+		hashType: blake2b.New(),
+		// data: [][]byte{
+		// 	[]byte("Foo"),
+		// 	[]byte("Bar"),
+		// 	[]byte("Baz"),
+		// },
+		hashes: [][]byte{
+			{123, 80, 109, 183, 24, 213, 204, 232, 25, 202, 77, 51, 210, 52, 128, 101, 165, 64, 140, 200, 154, 168, 179, 247, 172, 112, 160, 193, 134, 162, 200, 31},
+			{3, 199, 12, 7, 66, 76, 125, 133, 23, 75, 248, 224, 219, 212, 96, 10, 75, 210, 28, 0, 206, 52, 222, 167, 171, 87, 200, 60, 57, 142, 100, 6},
+			{109, 95, 210, 57, 31, 138, 187, 121, 70, 158, 223, 64, 79, 209, 117, 26, 116, 5, 108, 229, 78, 228, 56, 193, 40, 187, 169, 230, 128, 36, 42, 224},
+		},
+		root: _byteArray("2c95331b1a38dba3600391a3e864f9418a271388936e54edecd916824bb54203"),
+		dot:  "digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval];\"Foo\"->4;4 [label=\"7b50…c81f\"];4->2;\"Bar\" [shape=oval];\"Bar\"->5;5 [label=\"03c7…6406\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval];\"Baz\"->6;6 [label=\"6d5f…2ae0\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\"];3->1;2 [label=\"e9e0…f637\"];2->1;1 [label=\"2c95…4203\"];}",
+		proofDots: [][]string{
+			{
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Foo\"->4;4 [label=\"7b50…c81f\"];4->2;\"Bar\" [shape=oval];\"Bar\"->5;5 [label=\"03c7…6406\" style=filled fillcolor=\"#00ff00\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval];\"Baz\"->6;6 [label=\"6d5f…2ae0\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\" style=filled fillcolor=\"#00ff00\"];3->1;2 [label=\"e9e0…f637\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Foo\"->4;4 [label=\"7b50…c81f\"];4->2;\"Bar\" [shape=oval];\"Bar\"->5;5 [label=\"03c7…6406\" style=filled fillcolor=\"#00ff00\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval];\"Baz\"->6;6 [label=\"6d5f…2ae0\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\" style=filled fillcolor=\"#8080ff\"];3->1;2 [label=\"e9e0…f637\" style=filled fillcolor=\"#8080ff\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Foo\"->4;4 [label=\"7b50…c81f\" style=filled fillcolor=\"#8080ff\"];4->2;\"Bar\" [shape=oval];\"Bar\"->5;5 [label=\"03c7…6406\" style=filled fillcolor=\"#8080ff\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval];\"Baz\"->6;6 [label=\"6d5f…2ae0\" style=filled fillcolor=\"#8080ff\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\" style=filled fillcolor=\"#8080ff\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\" style=filled fillcolor=\"#8080ff\"];3->1;2 [label=\"e9e0…f637\" style=filled fillcolor=\"#8080ff\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+			},
+			{
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval];\"Foo\"->4;4 [label=\"7b50…c81f\" style=filled fillcolor=\"#00ff00\"];4->2;\"Bar\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Bar\"->5;5 [label=\"03c7…6406\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval];\"Baz\"->6;6 [label=\"6d5f…2ae0\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\" style=filled fillcolor=\"#00ff00\"];3->1;2 [label=\"e9e0…f637\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval];\"Foo\"->4;4 [label=\"7b50…c81f\" style=filled fillcolor=\"#00ff00\"];4->2;\"Bar\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Bar\"->5;5 [label=\"03c7…6406\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval];\"Baz\"->6;6 [label=\"6d5f…2ae0\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\" style=filled fillcolor=\"#8080ff\"];3->1;2 [label=\"e9e0…f637\" style=filled fillcolor=\"#8080ff\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval];\"Foo\"->4;4 [label=\"7b50…c81f\" style=filled fillcolor=\"#8080ff\"];4->2;\"Bar\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Bar\"->5;5 [label=\"03c7…6406\" style=filled fillcolor=\"#8080ff\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval];\"Baz\"->6;6 [label=\"6d5f…2ae0\" style=filled fillcolor=\"#8080ff\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\" style=filled fillcolor=\"#8080ff\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\" style=filled fillcolor=\"#8080ff\"];3->1;2 [label=\"e9e0…f637\" style=filled fillcolor=\"#8080ff\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+			},
+			{
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval];\"Foo\"->4;4 [label=\"7b50…c81f\"];4->2;\"Bar\" [shape=oval];\"Bar\"->5;5 [label=\"03c7…6406\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Baz\"->6;6 [label=\"6d5f…2ae0\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\" style=filled fillcolor=\"#00ff00\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\"];3->1;2 [label=\"e9e0…f637\" style=filled fillcolor=\"#00ff00\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval];\"Foo\"->4;4 [label=\"7b50…c81f\"];4->2;\"Bar\" [shape=oval];\"Bar\"->5;5 [label=\"03c7…6406\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Baz\"->6;6 [label=\"6d5f…2ae0\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\" style=filled fillcolor=\"#00ff00\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\" style=filled fillcolor=\"#8080ff\"];3->1;2 [label=\"e9e0…f637\" style=filled fillcolor=\"#8080ff\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+				"digraph MerkleTree {rankdir = TB;node [shape=rectangle margin=\"0.2,0.2\"];\"Foo\" [shape=oval];\"Foo\"->4;4 [label=\"7b50…c81f\" style=filled fillcolor=\"#8080ff\"];4->2;\"Bar\" [shape=oval];\"Bar\"->5;5 [label=\"03c7…6406\" style=filled fillcolor=\"#8080ff\"];4->5 [style=invisible arrowhead=none];5->2;\"Baz\" [shape=oval style=filled fillcolor=\"#ff4040\"];\"Baz\"->6;6 [label=\"6d5f…2ae0\" style=filled fillcolor=\"#8080ff\"];5->6 [style=invisible arrowhead=none];6->3;7 [label=\"0000…0000\" style=filled fillcolor=\"#8080ff\"];6->7 [style=invisible arrowhead=none];7->3;{rank=same;4;5;6;7};3 [label=\"113f…1135\" style=filled fillcolor=\"#8080ff\"];3->1;2 [label=\"e9e0…f637\" style=filled fillcolor=\"#8080ff\"];2->1;1 [label=\"2c95…4203\" style=filled fillcolor=\"#8080ff\"];}",
+			},
+		},
+	},
+}
+
 func TestNew(t *testing.T) {
 	for i, test := range tests {
 		tree, err := NewTree(
@@ -525,4 +583,13 @@ func TestInvalidMultiProof(t *testing.T) {
 	)
 	assert.False(t, verified, "invalid params verified should be false")
 	assert.Error(t, err, "invalid params should error")
+}
+
+func TestNewWithHashes(t *testing.T) {
+	for i, test := range testsWithHashes {
+		tree, _ := NewTreeWithLeavesHashes(test.hashes, test.hashType)
+		if !bytes.Equal(test.root, tree.Root()) {
+			t.Errorf("unexpected root at test %d", i)
+		}
+	}
 }
