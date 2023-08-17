@@ -245,11 +245,19 @@ func (t *MerkleTree) GenerateProof(data []byte, height int) (*Proof, error) {
 // If the Index is greater than the data count in the tree this will return an error.
 // If the Index is valid this will return the hashes for each level in the tree and the index of the value in the tree.
 func (t *MerkleTree) GenerateIndexProof(index uint64, height int) (*Proof, error) {
-	if index >= uint64(len(t.data)) {
-		return nil, fmt.Errorf("index %d greater than t.data length %d", index, len(t.data))
+	//calculate leaves count based on node count
+	branchesLen := len(t.nodes) / 2
+
+	if len(t.data) > 0 {
+		if !(branchesLen/2+1 <= len(t.data) && len(t.data) <= branchesLen) {
+			return nil, fmt.Errorf("data length %d not match with brancheslen %d", len(t.data), branchesLen)
+		}
+	}
+	if index >= uint64(branchesLen) {
+		return nil, fmt.Errorf("index %d greater than brancheslen %d", index, branchesLen)
 	}
 
-	proofLen := int(math.Ceil(math.Log2(float64(len(t.data))))) - height
+	proofLen := int(math.Ceil(math.Log2(float64(branchesLen)))) - height
 	hashes := make([][]byte, proofLen)
 
 	cur := 0

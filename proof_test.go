@@ -51,6 +51,7 @@ func TestIndexProof(t *testing.T) {
 				t.Fatalf("failed to create tree at test %d, err %s", i, err.Error())
 			}
 			for j, data := range test.data {
+				tree.data = nil
 				proof, err := tree.GenerateIndexProof(uint64(j), 0)
 				if err != nil {
 					t.Fatalf("failed to create proof at test %d data %d, err %s", i, j, err.Error())
